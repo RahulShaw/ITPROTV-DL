@@ -56,6 +56,7 @@ chrome_options.add_argument('--disable-logging')
 chrome_options.add_argument('--allow-running-insecure-content')
 chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 chrome_options.add_argument('--headless')
+chrome_options.add_argument('--disable-dev-shm-usage')
 
 if platform.system() == 'Linux':
     if os.path.exists("/usr/bin/chromedriver"):
