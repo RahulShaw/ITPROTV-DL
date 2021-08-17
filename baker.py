@@ -12,7 +12,7 @@ def bake():
         raise Exception('The "cookies.txt" file was not found')
 
     for line in lines:
-        if not line.startswith('.') or not line.startswith('app.') or (len(line.strip()) == 0):
+        if line.startswith('#') or not line.startswith('.') or not line.startswith('app.') or (len(line.strip()) == 0):
             pass
         else:
             line = line.replace('\n', '').split('\t')
