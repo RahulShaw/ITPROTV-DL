@@ -10,6 +10,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from tqdm import tqdm
 
@@ -46,7 +47,7 @@ headers = {
     'User-Agent': user_agent
 }
 
-chrome_options = Options()
+chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument(f'user-agent={user_agent}')
 chrome_options.add_argument('--disable-extensions')
 chrome_options.add_argument('--no-sandbox')
@@ -56,29 +57,31 @@ chrome_options.add_argument('--disable-logging')
 chrome_options.add_argument('--allow-running-insecure-content')
 chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])
 chrome_options.add_argument('--headless')
+chrome_options.add_argument('--disable-dev-shm-usage')
+
 
 if platform.system() == 'Linux':
     if os.path.exists("/usr/bin/chromedriver"):
-        browser = webdriver.Chrome(executable_path="/usr/bin/chromedriver",
-                                   options=chrome_options)
+        service = Service('/usr/bin/chromedriver')
+        browser = webdriver.Chrome(service=service, options=chrome_options)
     else:
         print("Chromedriver not found; expected path '/usr/bin/chromedriver'")
         exit(1)
 else:
     if os.path.exists("C:/ChromeDriver/chromedriver.exe"):
-        browser = webdriver.Chrome(executable_path="C:/ChromeDriver/chromedriver.exe",
-                                   options=chrome_options)
+        service = Service('C:/ChromeDriver/chromedriver.exe')
+        browser = webdriver.Chrome(service=service,options=chrome_options)
     else:
         print("Chromedriver not found; expected path 'C:/ChromeDriver/chromedriver.exe'")
         exit(1)
 
 browser.set_page_load_timeout(10000)
 browser.maximize_window()
-browser.get("https://app.itpro.tv/login/")
+browser.get("https://app.acilearning.com/login")
 browser.get(url)
 
 print("Executing for " + url)
-time.sleep(5)
+time.sleep(2)
 print('* Trying to log in ... *')
 
 try:
@@ -93,7 +96,7 @@ except Exception as e:
     raise e
 
 browser.get(url)
-time.sleep(5)
+time.sleep(2)
 html = browser.page_source
 parsed_html = BeautifulSoup(html, 'html5lib')
 
@@ -114,7 +117,7 @@ print("Course name detected as " + course_name)
 
 browser.execute_script("return document.querySelectorAll('.notCurrentTopic').forEach(e => e.click())")
 
-time.sleep(10)
+time.sleep(2)
 
 parsed_html = BeautifulSoup(browser.page_source, 'html5lib')
 
@@ -130,7 +133,7 @@ for index, lesson_url in enumerate(lesson_urls):
     browser.get(lesson_url)
     temp_html = browser.page_source
     temp_parsed_html = BeautifulSoup(temp_html, 'html5lib')
-    time.sleep(10)
+    time.sleep(1)
     while True:
         try:
             lessons.append(browser.execute_script("return document.getElementsByTagName('video')[0].src"))
